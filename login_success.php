@@ -16,7 +16,7 @@
 	if(strlen($name) > 0)
 	{
 		if(in_array($ext,$valid_formats))
-		{n
+		{
 			if($size<(1024*1024))
 			{
 				include('s3_config.php');

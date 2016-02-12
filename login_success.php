@@ -59,5 +59,16 @@
 		<?php echo $msg; ?>
 		</form>
 
+		<?php
+			$xml = simplexml_load_file('https://s3.amazonaws.com/vedut');
+			echo "<pre>";
+			foreach($xml->Contents as $img)
+			{
+		?>
+			<img src="https://s3.amazonaws.com/vedut/<?php echo $img->Key; ?>">
+		<?php
+			}
+		?>
+
 	</body>
 </html>

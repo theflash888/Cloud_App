@@ -1,6 +1,3 @@
-<?php
-phpinfo();
-?>
 <html>
 	<body>
 	<h1>Login!</h1>

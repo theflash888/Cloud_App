@@ -1,5 +1,5 @@
 <?php
-phpinfo();
+
 
 	$username = "root";
 	$password = "password";

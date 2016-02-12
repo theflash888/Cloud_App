@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+
 	$username = "root";
 	$password = "password";
 	$hostname = "assign1cloud.c3bipt8hjluw.us-west-2.rds.amazonaws.com";

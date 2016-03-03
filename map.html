@@ -14,44 +14,35 @@ height: 100%;
  
 </head>
 <body>
-  
-<section id="contact-us">
-<div class="container">           
+ 
+<!--Canvas for the Google Map API-->         
 <div class="row">
 <div class="col-md-8">
 <div class="center gap">
 <div style="height:400px; width:100%; border: 2px solid #a7a7a7;"> 
-<div id="map-canvas"></div>
+<div id="map-canvas"></div>              
 </div>
-</div>                
-</div>
-<div class="col-md-4">
-<div class="panel panel-default ">
 <div class="panel-heading">
 <h2 ><span class="icon-map-marker icon-sm"></span> Get directions to UOIT &nbsp;</h2>
 </div>
 <div class="panel-body silver">                              
 
 
-<input type="radio" name="map_mode" id="auto_detect" value="auto_detect" onclick="auto_mode_handler();">Auto-Detect Address </input>&nbsp;&nbsp;&nbsp;
-<input type="radio" name="map_mode" id="manual" value="manual" onclick="manual_mode_handler();">Enter Manually </input>
+<input value="auto_detect" onclick="auto_mode_handler();">Auto-Detect Address </input>&nbsp;&nbsp;&nbsp;
+<input id="manual" value="manual" onclick="manual_mode_handler();">Enter Manually </input>
 <hr class="divider">
 
-<div id="man-mode"class="form-group" style ="display:none;">
-<input type="text" class="form-control" name="address" id="address" placeholder="Address.."> </input><br>
+<div id="man-mode"style ="display:none;">
+<input id="address" placeholder="Address"> </input><br>
 <button type="button" onclick="manual_locate();" class="btn btn-primary">Get Directions</button>
 </div>
-
-</div>
-</div>               
-</div>
-</div>        
+  
 </div>
 </section>
        
 
 
- <script>
+<script>
 var directionsService;
 var map; 
 var geo;
@@ -60,31 +51,53 @@ var displayDir;
 var company_marker;
 var markerArray = [];
 
-function initialize() {
+
+//This function calculates the route on the map itself
+function calculateRoute(start) {
+
+  //First, remove any existing markers from the map.
+  for (var i = 0; i < markerArray.length; i++) 
+  {
+    markerArray[i].setMap(null);
+  }
+
+  //Now, clear the array
+  markerArray = [];
+
+  //Retrieve the start and end locations and create request
+  var end = "2000 Simcoe Street North, Oshawa, Ontario, CA L1H 7K4";
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: google.maps.TravelMode.DRIVING
+  };
+
+//This function gets the address that was inputted and calcs the lat, long and both together
+  function getAddress(position){
+ 
+  var latitude = position.coords.latitude;
+  var longitude = position.coords.longitude;
+  var latlong = new google.maps.LatLng(latitude, longitude);
+  
+  geo.geocode({'latLong': latlong}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) { if (results[1]) {calcRoute(results[1].formatted_address);} 
+      else {return 0;}} else {return 0;}
+  });
+                
+}
+
+//Initializes the Map itself on the canvas
+function initializeMap() {
   // Instantiate a directions service.
   directionsService = new google.maps.DirectionsService();
-  
-   geo = new google.maps.Geocoder();
 
-  // Create a map and center it on company_location.
-  var company_location = new google.maps.LatLng(43.9453757,-78.8986081);
+  var company_location = new google.maps.LatLong(43.9453757,-78.8986081);
 
-  var mapOptions = {zoom: 15, center: company_location}
-
-  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-  
   var company_marker_info = 'University of Ontario Institute of Technology';
-  
-   
-  var infowindow = new google.maps.InfoWindow({content: company_marker_info});
-  
 
-   company_marker = new google.maps.Marker({
-      position: company_location,
-      animation: google.maps.Animation.DROP,
-      map: map,
-      title: 'UOIT'
-  });
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions); 
+
+   company_marker = new google.maps.Marker({position: company_location, animation: google.maps.Animation.DROP, map: map, title: 'UOIT'});
 
   // Create a renderer for directions binded to the map
   var rendererOptions = {
@@ -101,6 +114,7 @@ function initialize() {
   
 }
 
+//manual location of address
 function manual_locate()
 {
   
@@ -108,69 +122,10 @@ function manual_locate()
   calcRoute(start);
 }
 
-function calcRoute(start) {
-
-  // First, remove any existing markers from the map.
-  for (var i = 0; i < markerArray.length; i++) {
-    markerArray[i].setMap(null);
-  }
-
-  // Now, clear the array itself.
-  markerArray = [];
-
-  // Retrieve the start and end locations and create
-  // a DirectionsRequest using WALKING directions.
-  //var start = geo_locate();
-  var end = "2000 Simcoe Street North, Oshawa, Ontario, CA L1H 7K4";
-  var request = {
-      origin: start,
-      destination: end,
-      travelMode: google.maps.TravelMode.DRIVING
-  };
-
-  // Route the directions and response
-  // function to create directions markers.
-  directionsService.route(request, function(response, status) {
-    if (status == google.maps.DirectionsStatus.OK) {displayDir.setDirections(response);
-      showSteps(response);
-    }
-  });
-}
-
-function getAddress(position){
- 
-  var lat = position.coords.latitude;
-  var lon = position.coords.longitude;
-  var latlng = new google.maps.LatLng(lat, lon);
-  
-  geo.geocode({'latLng': latlng}, function(results, status) {
-    if (status == google.maps.GeocoderStatus.OK) {
-      if (results[1]) {
-        calcRoute(results[1].formatted_address);
-        //infowindow.open(map, marker);
-      } 
-      else {
-        return 0;
-      }
-    } else {
-      return 0;
-    }
-  });
-                
-}
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
-
-function manual_locate()
-{
-  
-  var start = $("#address").val(); 
-  calcRoute(start);
-}
 </script>
-
-
                      
 </body>
 </html>

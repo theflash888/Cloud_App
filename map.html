@@ -4,21 +4,16 @@
 <!DOCTYPE html>
 <html lang="en" >
 <head>
-
-
 <script src="scripts/jquery.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZsiqG9pg-1tj81vu17uWZYs1VmkZ0eEA"></script>
 <style>
 html,body, #map-canvas {
 height: 100%;
-}
-      
+}    
 </style>
- 
  
 </head>
 <body>
-
   
 <section id="contact-us">
 <div class="container">           
@@ -42,7 +37,7 @@ height: 100%;
 <input type="radio" name="map_mode" id="manual" value="manual" onclick="manual_mode_handler();">Enter Manually </input>
 <hr class="divider">
 
-<div id="manual_mode_section"class="form-group" style ="display:none;">
+<div id="man-mode"class="form-group" style ="display:none;">
 <input type="text" class="form-control" name="address" id="address" placeholder="Address.."> </input><br>
 <button type="button" onclick="manual_locate();" class="btn btn-primary">Get Directions</button>
 </div>
@@ -57,11 +52,12 @@ height: 100%;
 
 
  <script>
-var map; var company_marker;
-var geo;
-var displayDir;
 var directionsService;
+var map; 
+var geo;
 var stepDisplay;
+var displayDir;
+var company_marker;
 var markerArray = [];
 
 function initialize() {
@@ -105,6 +101,13 @@ function initialize() {
   
 }
 
+function manual_locate()
+{
+  
+  var start = $("#address").val(); 
+  calcRoute(start);
+}
+
 function calcRoute(start) {
 
   // First, remove any existing markers from the map.
@@ -134,53 +137,6 @@ function calcRoute(start) {
   });
 }
 
-function showSteps(directionResult) {
-  // For each step, place a marker, and add the text to the marker's
-  // info window. Also attach the marker to an array so we
-  // can keep track of it and remove it when calculating new
-  // routes.
-  var myRoute = directionResult.routes[0].legs[0];
-
-  for (var i = 0; i < myRoute.steps.length; i++) {
-    var marker = new google.maps.Marker({
-      position: myRoute.steps[i].start_location,
-      map: map
-    });
-    attachInstructionText(marker, myRoute.steps[i].instructions);
-    markerArray[i] = marker;
-  }
-}
-
-function attachInstructionText(marker, text) {
-  google.maps.event.addListener(marker, 'click', function() {
-    // Open an info window when the marker is clicked on,
-    // containing the text of the step.
-    stepDisplay.setContent(text);
-    stepDisplay.open(map, marker);
-  });
-}
-
-function toggleBounce(){
-
-  if(company_marker.getAnimation() != null){
-   company_marker.setAnimation(null);
-  } 
-  else {
-   company_marker.setAnimation(google.maps.Animation.BOUNCE);
-  }
-}
-
-function geo_locate()
-{
-   if (navigator.geolocation){
-  	//remember this is async behavior, the browser does not have access to your locations right away but it does not want to stop executing code
-    navigator.geolocation.getCurrentPosition(getAddress);
-  } else{
-    alert("error");
-	//info.innerHTML="Geolocation is not supported by this browser.";
-  }
-}
-
 function getAddress(position){
  
   var lat = position.coords.latitude;
@@ -192,7 +148,8 @@ function getAddress(position){
       if (results[1]) {
         calcRoute(results[1].formatted_address);
         //infowindow.open(map, marker);
-      } else {
+      } 
+      else {
         return 0;
       }
     } else {
@@ -203,19 +160,6 @@ function getAddress(position){
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
-
-function auto_mode_handler(object)
-{  
-   $('#manual_mode_section').hide();
-    $('#auto_mode_section').show();
-   geo_locate();
-}
-
-function manual_mode_handler(object)
-{  
-   $('#manual_mode_section').show();
-   $('#auto_mode_section').hide();
-}
 
 
 function manual_locate()
